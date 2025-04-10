@@ -41,7 +41,19 @@ void specialKeys(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-// Reshape callback
+// Keyboard callback for alphanumerical
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'c': // Switch camera view
+        case 'C':
+            spaceship.toggleCameraView();
+            break;
+    }
+    glutPostRedisplay();
+}
+
+//The reshape callback in OpenGL 
+//is used to handle window resizing events.
 void reshape(int width, int height) {
     if (height == 0) height = 1;
     float aspect = (float)width / (float)height;
@@ -68,6 +80,7 @@ int main(int argc, char** argv) {
     
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
+    glutKeyboardFunc(keyboard); 
     glutSpecialFunc(specialKeys);
     
     initGL();
