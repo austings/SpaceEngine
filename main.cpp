@@ -1,5 +1,8 @@
 #include <GL/glut.h>
+#include "world.h"
 #include "spaceship.h"
+#include <algorithm>
+#include <cmath>
 
 // Global spaceship object
 Spaceship spaceship;
@@ -11,11 +14,26 @@ void display() {
     
     // Apply spaceship's camera view
     spaceship.applyCameraView();
+
+    Sphere planet(0.0f, 0.0f, 0.0f, 1.0f, 10, 10); // low res to start
+
+    // Determine LOD based on distance
+    // Calculate distance from spaceship to sphere
+    float dx = spaceship.getPosX() - planet.getPosX();
+    float dy = spaceship.getPosY() - planet.getPosY();
+    float dz = spaceship.getPosZ() - planet.getPosZ();
+    float distance = sqrt(dx * dx + dy * dy + dz * dz);
+    int maxDetail = 50;
+    int minDetail = 8;
+    int detail = std::max(minDetail, maxDetail - (int)distance * 2); // crude scaling
+    detail = std::min(detail, maxDetail); // clamp to maxDetail
     
-    // Draw the sphere (greenish)
-    glColor3f(0.2f, 0.7f, 0.3f);
-    glutSolidSphere(1.0, 50, 50);
-    
+    planet.setSlices(detail);
+    planet.setStacks(detail);
+
+    // Render the planet
+    planet.render();
+
     // Render the spaceship
     spaceship.render();
     

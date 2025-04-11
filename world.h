@@ -4,54 +4,103 @@
 
 #include <GL/glut.h> // Include OpenGL/GLUT for rendering functions
 
-// Abstract base class for all renderable objects in the world
+#include <vector>
+#include <cstddef>
+#include <iostream>
+
+// The Region class represents an individual cell in the Matrix.
+class Region {
+public:
+    // Default constructor
+    Region();
+
+    // Parameterized constructor
+    explicit Region(int id);
+
+    // Copy constructor
+    Region(const Region &other);
+
+    // Assignment operator
+    Region& operator=(const Region &other);
+
+    // Destructor
+    ~Region();
+
+    // A simple method to print the Region (for demonstration purposes)
+    void print() const;
+
+    // Getter for the Region's id.
+    int getId() const;
+
+private:
+    int id; // An example property; you can add more properties as needed.
+};
+
+// The Matrix class encapsulates a two-dimensional vector (matrix)
+// of Region objects.
+class Matrix {
+public:
+    // Constructor: creates a Matrix with given rows and columns.
+    Matrix(std::size_t rows, std::size_t cols);
+
+    // Copy constructor
+    Matrix(const Matrix &other);
+
+    // Assignment operator
+    Matrix& operator=(const Matrix &other);
+
+    // Destructor
+    ~Matrix();
+
+    // Access the Region at [row, col]. Throws std::out_of_range if index invalid.
+    Region& at(std::size_t row, std::size_t col);
+    const Region& at(std::size_t row, std::size_t col) const;
+
+    // Accessors for the dimensions of the matrix.
+    std::size_t getRows() const;
+    std::size_t getCols() const;
+
+    // Print the entire matrix by printing each Region
+    void print() const;
+
+private:
+    std::size_t rows, cols;
+    std::vector< std::vector<Region> > data;
+};
+
 class RenderableObject {
 protected:
-    float posX, posY, posZ; // Position in 3D space (x, y, z coordinates)
-
+    float posX, posY, posZ;
 public:
-    // Constructor to initialize position
-    RenderableObject(float x, float y, float z) : posX(x), posY(y), posZ(z) {}
-
-    // Pure virtual function for rendering the object
+    RenderableObject(float x, float y, float z);
     virtual void render() = 0;
-
-    // Virtual destructor for proper cleanup in derived classes
-    virtual ~RenderableObject() {}
+    virtual ~RenderableObject();
+    // Getters for position (if needed externally)
+    float getPosX() const { return posX; }
+    float getPosY() const { return posY; }
+    float getPosZ() const { return posZ; }
 };
 
-// Concrete class representing a spherical object (e.g., a planet) in the world
 class Sphere : public RenderableObject {
 private:
-    float radius;        // Radius of the sphere
-    int slices, stacks;  // Number of subdivisions for smooth rendering
-
+    float radius;
+    int slices, stacks;
 public:
-    // Constructor to initialize position and sphere properties
-    Sphere(float x, float y, float z, float r, int sl, int st)
-        : RenderableObject(x, y, z), radius(r), slices(sl), stacks(st) {}
-
-    // Render the sphere using OpenGL
-    void render() override {
-        glPushMatrix();                    // Save current matrix state
-        glTranslatef(posX, posY, posZ);    // Move to object's position
-        glColor3f(0.2f, 0.7f, 0.3f);      // Set greenish color
-        glutSolidSphere(radius, slices, stacks); // Draw the sphere
-        glPopMatrix();                     // Restore matrix state
-    }
+    Sphere(float x, float y, float z, float r, int sl, int st);
+    void render() override;
+    // Getters for LOD
+    int getSlices() const { return slices; }
+    int getStacks() const { return stacks; }
+    void setSlices(float sl) { slices = sl; }
+    void setStacks(float st) { stacks = st; }
 };
+
 class Cube : public RenderableObject {
 private:
     float size;
 public:
-    Cube(float x, float y, float z, float s) : RenderableObject(x, y, z), size(s) {}
-    void render() override {
-        glPushMatrix();
-        glTranslatef(posX, posY, posZ);
-        glColor3f(0.5f, 0.5f, 0.5f);
-        glutSolidCube(size);
-        glPopMatrix();
-    }
+    Cube(float x, float y, float z, float s);
+    void render() override;
 };
 
 #include <vector>
