@@ -12,11 +12,8 @@ void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     
-    // Apply spaceship's camera view
-    spaceship.applyCameraView();
 
     Sphere planet(0.0f, 0.0f, 0.0f, 1.0f, 10, 10); // low res to start
-
     // Determine LOD based on distance
     // Calculate distance from spaceship to sphere
     float dx = spaceship.getPosX() - planet.getPosX();
@@ -24,18 +21,20 @@ void display() {
     float dz = spaceship.getPosZ() - planet.getPosZ();
     float distance = sqrt(dx * dx + dy * dy + dz * dz);
     int maxDetail = 50;
-    int minDetail = 8;
-    int detail = std::max(minDetail, maxDetail - (int)distance * 2); // crude scaling
+    int minDetail = 1;
+    int detail = std::max(minDetail, maxDetail - ((int)distance * 2)); // crude scaling
     detail = std::min(detail, maxDetail); // clamp to maxDetail
     
     planet.setSlices(detail);
     planet.setStacks(detail);
 
+
+    // Apply spaceship's camera view
+    spaceship.applyCameraView(detail+1);
+    // Render the spaceship
+    spaceship.render(5);
     // Render the planet
     planet.render();
-
-    // Render the spaceship
-    spaceship.render();
     
     glutSwapBuffers();
 }
@@ -44,10 +43,10 @@ void display() {
 void specialKeys(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
-            spaceship.moveForward();
+            spaceship.rotateYaw();
             break;
         case GLUT_KEY_DOWN:
-            spaceship.moveBackward();
+            spaceship.rotateRoll();
             break;
         case GLUT_KEY_LEFT:
             spaceship.turnLeft();
@@ -66,7 +65,18 @@ void keyboard(unsigned char key, int x, int y) {
         case 'C':
             spaceship.toggleCameraView();
             break;
+        case 32://spacebar
+            spaceship.moveForward();
+            break;
+        case 13://enter
+            spaceship.toggleCameraView();
+            break;
+        case 9://tab
+            spaceship.toggleCameraView();
+            break;
+            
     }
+    
     glutPostRedisplay();
 }
 
