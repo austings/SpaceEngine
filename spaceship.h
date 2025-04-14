@@ -24,6 +24,7 @@ public:
     void rotateYaw();
     void rotatePitch();
     void rotateRoll();
+    void pitchShip(float degrees);
     void applyCameraView(int scale) const;
     void render(int scale) const;
     void toggleCameraView();

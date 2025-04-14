@@ -43,10 +43,10 @@ void display() {
 void specialKeys(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_UP:
-            spaceship.rotateYaw();
+            spaceship.turnDown();
             break;
         case GLUT_KEY_DOWN:
-            spaceship.rotateRoll();
+            spaceship.turnUp();
             break;
         case GLUT_KEY_LEFT:
             spaceship.turnLeft();
